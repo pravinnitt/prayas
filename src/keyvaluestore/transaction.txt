@@ -1,0 +1,7 @@
+Delete A
+BeginTransaction
+Insert A 5
+Update A 6
+Insert B 5
+Read A
+Commit
