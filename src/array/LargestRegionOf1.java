@@ -16,25 +16,42 @@ import java.util.Queue;
 public class LargestRegionOf1 {
 
 
-    public static int[][] input ={{1,1,0},{0,1,0},{1,0,1},{0,0,1}};
+    public static int[][] input ={{0,1,0},{0,0,1},{1,0,1},{1,0,1},{1,0,0},{1,0,1},{1,1,0}};
     public static void main(String[] args){
 
         LargestRegionOf1 lregion = new LargestRegionOf1();
 
         UnitCell[][] store = lregion.transformMatrixToCell(input);
         lregion.printInput(store);
-        UnitCell one = store[0][1];
-        System.out.println(" Maximum region length  = " + lregion.findMaxRegion(store));
+        List<UnitCell> largestRange = lregion.findMaxRegion(store);
+        System.out.println(" Maximum region length  = " + largestRange.size());
+        lregion.printLargestRange(largestRange,input.length,input[0].length);
     }
 
-    public int findMaxRegion(UnitCell[][] param) {
+    public void printLargestRange(List<UnitCell> largestRange,int rowCount,int columnCount)
+    {
+       int[][] display = new int[rowCount][columnCount];
+
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                display[i][j] =0;
+            }
+        }
+        for(UnitCell cell: largestRange){
+            display[cell.getXcord()][cell.getYcord()] =1;
+        }
+        printArray(display);
+    }
+    public List<UnitCell> findMaxRegion(UnitCell[][] param) {
         int maxLength = 0;
+        List<UnitCell> maxlist = new ArrayList<>();
         int rowSize = param.length;
         int columnSize = param[0].length;
         for (int i = 0; i < rowSize; i++) {
-            int curLength = 0;
             for (int j = 0; j < columnSize; j++) {
-                Queue<UnitCell> list = new LinkedList<>();
+                int curLength = 0;
+                List<UnitCell> curlist = new ArrayList<>();
+                        Queue<UnitCell> list = new LinkedList<>();
                 if(param[i][j].getValue()==1 && !param[i][j].isVisited) {
                     list.add(param[i][j]);
                 }
@@ -50,16 +67,18 @@ public class LargestRegionOf1 {
                             }
                         }
                         curLength+=1;
-                        if(curLength>maxLength) {
-                            maxLength=curLength;
-                        }
                         cur.setVisited(true);
+                        curlist.add(cur);
                     }
+                }
+                if(curLength>maxLength) {
+                    maxLength=curLength;
+                    maxlist = curlist;
                 }
             }
         }
 
-        return maxLength;
+        return maxlist;
     }
 
     /**
@@ -156,6 +175,16 @@ public class LargestRegionOf1 {
             System.out.println();
         }
     }
+    public void printArray(int[][] param) {
+        int rowSize = param.length;
+        int columnSize = param[0].length;
+        for (int i = 0; i < rowSize; i++) {
+            for (int j = 0; j <columnSize ; j++) {
+                System.out.print(" " +param[i][j]);
+            }
+            System.out.println();
+        }
+    }
 }
 
  class UnitCell {
@@ -193,11 +222,13 @@ public class LargestRegionOf1 {
 
      int xcord, Ycord,value;
     boolean isVisited;
+     UnitCell parent;
 
      UnitCell(int x, int y, int val) {
          this.xcord =x;
          this.Ycord =y;
          this.value =val;
          this.isVisited =false;
+         this.parent=null;
      }
 }
